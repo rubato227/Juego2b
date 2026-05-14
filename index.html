@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen: Clasificación de instrumentos</title>
+
+    <!-- =========================
+         ESTILOS DE LA PÁGINA
+    ========================== -->
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; padding: 0; text-align: center; color: #222;
+            background: linear-gradient(45deg, #0575e6, #00f260, #00c6ff);
+            background-size: 400% 400%;
+            animation: fondo 12s ease infinite;
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        @keyframes fondo {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .contenedor {
+            width: 95%;
+            max-width: 1000px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .grid-juego {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        img {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        img:hover {
+            transform: scale(1.02);
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            margin: 10px 0;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #0077ff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #0055cc;
+            transform: translateY(-2px);
+        }
+
+        #temporizador {
+            font-size: 40px;
+            color: #ff4757;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        #barraTiempo {
+            width: 100%;
+            height: 12px;
+            background: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        #rellenoTiempo {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            transition: width 1s linear;
+        }
+
+        .oculto {
+            display: none;
+        }
+
+        @media(max-width: 800px) {
+            .grid-juego {
+                grid-template-columns: 1fr;
+            }
+
+            .contenedor {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================
+         CONTENEDOR PRINCIPAL
+    ========================== -->
+    <div class="contenedor" id="mainContainer">
+
+        <h1>🎵 Clasificación de instrumentos 🎵</h1>
+
+        <!-- =========================
+             PANTALLA DE INICIO
+        ========================== -->
+        <div id="pantallaInicio">
+
+            <p>Introduce tus datos para comenzar</p>
+
+            <div style="max-width: 400px; margin: 0 auto;">
+
+                <input type="text" id="nombre" placeholder="Nombre y apellidos">
+
+                <select id="curso">
+                    <option value="">Selecciona tu curso</option>
+                    <option value="1º A">1º A</option>
+                    <option value="1º B">1º B</option>
+                    <option value="1º C">1º C</option>
+                    <option value="1º D">1º D</option>
+                </select>
+
+                <button onclick="iniciarJuego()">▶ EMPEZAR</button>
+
+            </div>
+        </div>
+
+        <!-- =========================
+             PANTALLA DEL JUEGO
+        ========================== -->
+        <div id="juego" class="oculto">
+
+            <div class="grid-juego">
+
+                <!-- IMAGEN -->
+                <div>
+                    <img id="imagen" onclick="sonar()" src="" alt="Instrumento">
+                    <p><small>(Haz clic en la imagen para volver a escuchar)</small></p>
+                </div>
+
+                <!-- RESPUESTAS -->
+                <div>
+
+                    <div id="temporizador">15</div>
+
+                    <div id="barraTiempo">
+                        <div id="rellenoTiempo"></div>
+                    </div>
+
+                    <input type="text" id="respuesta" placeholder="¿Qué instrumento es?">
+
+                    <select id="clasificacion">
+                        <option value="">Selecciona familia...</option>
+                        <option value="cuerda frotada">Cuerda frotada</option>
+                        <option value="cuerda pulsada">Cuerda pulsada</option>
+                        <option value="cuerda percutida">Cuerda percutida</option>
+                        <option value="viento metal">Viento metal</option>
+                        <option value="viento madera embocadura de bisel">Viento madera embocadura de bisel</option>
+                        <option value="viento madera lengüeta simple">Viento madera lengüeta simple</option>
+                        <option value="viento madera lengüeta doble">Viento madera lengüeta doble</option>
+                        <option value="viento mecánico">Viento mecánico</option>
+                        <option value="percusión afinación indeterminada">Percusión afinación indeterminada</option>
+                        <option value="percusión afinación determinada">Percusión afinación determinada</option>
+                    </select>
+
+                    <button onclick="comprobar()">Siguiente instrumento ➔</button>
+
+                    <div id="puntuacion" style="margin-top:20px; font-weight:bold; color:#555;">
+                        Puntos acumulados: 0
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        /* =========================
+           LISTA DE INSTRUMENTOS
+        ========================== */
+
+        const instrumentos = [
+
+            {
+                nombre:"Violín",
+                clasificacion:"cuerda frotada",
+                imagen:"iono.jpg",
+                sonido:"violin.mp3"
+            },
+
+            {
+                nombre:"Trompeta",
+                clasificacion:"viento metal",
+                imagen:"iono.jpg",
+                sonido:"trompeta.mp3"
+            },
+
+            {
+                nombre:"Oboe",
+                clasificacion:"viento madera lengüeta doble",
+                imagen:"iono.jpg",
+                sonido:"oboe.mp3"
+            },
+
+            {
+                nombre:"Guitarra",
+                clasificacion:"cuerda pulsada",
+                imagen:"iono.jpg",
+                sonido:"guitarra_clasica.mp3"
+            },
+
+            {
+                nombre:"Viola",
+                clasificacion:"cuerda frotada",
+                imagen:"iono.jpg",
+                sonido:"viola.mp3"
+            },
+
+            {
+                nombre:"Violonchelo",
+                clasificacion:"cuerda frotada",
+                imagen:"iono.jpg",
+                sonido:"cello.mp3"
+            },
+
+            {
+                nombre:"Arpa",
+                clasificacion:"cuerda pulsada",
+                imagen:"iono.jpg",
+                sonido:"arpa.mp3"
+            },
+
+            {
+                nombre:"Contrabajo",
+                clasificacion:"cuerda frotada",
+                imagen:"iono.jpg",
+                sonido:"contrabajo.mp3"
+            },
+
+            {
+                nombre:"Laúd",
+                clasificacion:"cuerda pulsada",
+                imagen:"iono.jpg",
+                sonido:"laud.mp3"
+            },
+
+            {
+                nombre:"Clavicémbalo",
+                clasificacion:"cuerda pulsada",
+                imagen:"iono.jpg",
+                sonido:"clavicembalo.mp3"
+            },
+
+            {
+                nombre:"Piano",
+                clasificacion:"cuerda percutida",
+                imagen:"iono.jpg",
+                sonido:"piano.mp3"
+            },
+
+            {
+                nombre:"Flauta",
+                clasificacion:"viento madera embocadura de bisel",
+                imagen:"iono.jpg",
+                sonido:"flauta.mp3"
+            },
+
+            {
+                nombre:"Flautín",
+                clasificacion:"viento madera embocadura de bisel",
+                imagen:"iono.jpg",
+                sonido:"flautin.mp3"
+            },
+
+            {
+                nombre:"Clarinete",
+                clasificacion:"viento madera lengüeta simple",
+                imagen:"iono.jpg",
+                sonido:"clarinete.mp3"
+            },
+
+            {
+                nombre:"Saxofón",
+                clasificacion:"viento madera lengüeta simple",
+                imagen:"iono.jpg",
+                sonido:"saxofon.mp3"
+            },
+
+            {
+                nombre:"Corno inglés",
+                clasificacion:"viento madera lengüeta doble",
+                imagen:"iono.jpg",
+                sonido:"corno_ingles.mp3"
+            },
+
+            {
+                nombre:"Fagot",
+                clasificacion:"viento madera lengüeta doble",
+                imagen:"iono.jpg",
+                sonido:"fagot.mp3"
+            },
+
+            {
+                nombre:"Contrafagot",
+                clasificacion:"viento madera lengüeta doble",
+                imagen:"iono.jpg",
+                sonido:"contrafagot.mp3"
+            },
+
+            {
+                nombre:"Trombón",
+                clasificacion:"viento metal",
+                imagen:"iono.jpg",
+                sonido:"trombon.mp3"
+            },
+
+            {
+                nombre:"trompa",
+                clasificacion:"viento metal",
+                imagen:"iono.jpg",
+                sonido:"trompa.mp3"
+            },
+
+            {
+                nombre:"Tuba",
+                clasificacion:"viento metal",
+                imagen:"iono.jpg",
+                sonido:"tuba.mp3"
+            },
+
+            {
+                nombre:"Órgano",
+                clasificacion:"viento mecánico",
+                imagen:"iono.jpg",
+                sonido:"organo.mp3"
+            },
+
+            {
+                nombre:"Acordeón",
+                clasificacion:"viento mecánico",
+                imagen:"iono.jpg",
+                sonido:"acordeon.mp3"
+            },
+
+            {
+                nombre:"caja",
+                clasificacion:"percusión afinación indeterminada",
+                imagen:"iono.jpg",
+                sonido:"caja.mp3"
+            },
+
+            {
+                nombre:"Bombo",
+                clasificacion:"percusión afinación indeterminada",
+                imagen:"iono.jpg",
+                sonido:"bombo.mp3"
+            },
+
+            {
+                nombre:"Castañuelas",
+                clasificacion:"percusión afinación indeterminada",
+                imagen:"iono.jpg",
+                sonido:"castanuelas.mp3"
+            },
+
+            {
+                nombre:"Triángulo",
+                clasificacion:"percusión afinación indeterminada",
+                imagen:"iono.jpg",
+                sonido:"triangulo.mp3"
+            },
+
+            {
+                nombre:"Gong",
+                clasificacion:"percusión afinación indeterminada",
+                imagen:"iono.jpg",
+                sonido:"gong.mp3"
+            },
+
+            {
+                nombre:"Xilófono",
+                clasificacion:"percusión afinación determinada",
+                imagen:"iono.jpg",
+                sonido:"xilofono.mp3"
+            },
+
+            {
+                nombre:"Marimba",
+                clasificacion:"percusión afinación determinada",
+                imagen:"iono.jpg",
+                sonido:"marimba.mp3"
+            },
+
+            {
+                nombre:"Glockenspiel",
+                clasificacion:"percusión afinación determinada",
+                imagen:"iono.jpg",
+                sonido:"glockenspiel.mp3"
+            },
+
+            {
+                nombre:"Vibráfono",
+                clasificacion:"percusión afinación determinada",
+                imagen:"iono.jpg",
+                sonido:"vibrafono.mp3"
+            },
+
+        ];
+
+        /* =========================
+           VARIABLES DEL JUEGO
+        ========================== */
+
+        let i = 0;
+        let puntosAcumulados = 0;
+        let preguntasRespondidas = 0;
+        let t = 15;
+        let cronometro;
+
+        /* =========================
+           SONIDOS
+        ========================== */
+
+        let audioInstrumento = new Audio();
+        let ok = new Audio("correcto.mp3");
+        let error = new Audio("error.mp3");
+        let alarma = new Audio("urgente.mp3");
+
+        /* =========================
+           FUNCIÓN PARA NORMALIZAR TEXTO
+           (NO penaliza:
+           - tildes
+           - mayúsculas
+           - espacios
+           - b/v
+           - c/s/z
+           - ll/y
+           - h
+        ========================== */
+
+        function normalizarTexto(texto) {
+
+            return texto
+                .toLowerCase()
+                .trim()
+
+                // Quitar tildes
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+
+                // Equivalencias ortográficas
+                .replace(/v/g, "b")
+                .replace(/z/g, "s")
+                .replace(/c/g, "s")
+                .replace(/ll/g, "y")
+                .replace(/h/g, "")
+
+                // Quitar espacios extra
+                .replace(/\s+/g, " ");
+        }
+
+        /* =========================
+           INICIAR JUEGO
+        ========================== */
+
+        function iniciarJuego() {
+
+            const nom = document.getElementById("nombre").value;
+            const cur = document.getElementById("curso").value;
+
+            if (nom === "" || cur === "") {
+                alert("Rellena nombre y curso");
+                return;
+            }
+
+            document.getElementById("pantallaInicio").classList.add("oculto");
+            document.getElementById("juego").classList.remove("oculto");
+
+            instrumentos.sort(() => Math.random() - 0.5);
+
+            cargarPregunta();
+        }
+
+        /* =========================
+           CARGAR PREGUNTA
+        ========================== */
+
+        function cargarPregunta() {
+
+            if (i >= instrumentos.length) return;
+
+            document.getElementById("imagen").src = instrumentos[i].imagen;
+
+            document.getElementById("respuesta").value = "";
+
+            document.getElementById("clasificacion").value = "";
+
+            sonar();
+
+            iniciarCronometro();
+        }
+
+        /* =========================
+           REPRODUCIR SONIDO
+        ========================== */
+
+        function sonar() {
+
+            audioInstrumento.pause();
+
+            audioInstrumento.src = instrumentos[i].sonido;
+
+            audioInstrumento.play().catch(e => {});
+        }
+
+        /* =========================
+           TEMPORIZADOR
+        ========================== */
+
+        function iniciarCronometro() {
+
+            clearInterval(cronometro);
+
+            t = 20;
+
+            actualizarBarra();
+
+            cronometro = setInterval(() => {
+
+                t--;
+
+                actualizarBarra();
+
+                if (t === 3) alarma.play();
+
+                if (t <= 0) {
+                    clearInterval(cronometro);
+                    comprobar();
+                }
+
+            }, 1000);
+        }
+
+        /* =========================
+           ACTUALIZAR BARRA DE TIEMPO
+        ========================== */
+
+        function actualizarBarra() {
+
+            document.getElementById("temporizador").innerHTML = t;
+
+            document.getElementById("rellenoTiempo").style.width = (t / 15 * 100) + "%";
+        }
+
+        /* =========================
+           COMPROBAR RESPUESTA
+        ========================== */
+
+        function comprobar() {
+
+            clearInterval(cronometro);
+
+            const actual = instrumentos[i];
+
+            // RESPUESTA DEL ALUMNO
+            const rNombre = normalizarTexto(
+                document.getElementById("respuesta").value
+            );
+
+            // RESPUESTA CORRECTA
+            const nombreCorrecto = normalizarTexto(
+                actual.nombre
+            );
+
+            const rClasif = document.getElementById("clasificacion").value;
+
+            let aciertoTurno = 0;
+
+            // COMPROBACIÓN FLEXIBLE
+            if (rNombre === nombreCorrecto) {
+                aciertoTurno += 0.5;
+            }
+
+            if (rClasif === actual.clasificacion) {
+                aciertoTurno += 0.5;
+            }
+
+            /* =========================
+               SONIDOS DE FEEDBACK
+            ========================== */
+
+            if (aciertoTurno === 1) {
+                ok.play();
+            } else {
+                error.play();
+            }
+
+            puntosAcumulados += aciertoTurno;
+
+            preguntasRespondidas++;
+
+            document.getElementById("puntuacion").innerHTML =
+                "Puntos acumulados: " + puntosAcumulados;
+
+            if (preguntasRespondidas === instrumentos.length) {
+
+                setTimeout(finalizarExamen, 1000);
+
+            } else {
+
+                i++;
+
+                setTimeout(cargarPregunta, 1000);
+            }
+        }
+
+        /* =========================
+           FINALIZAR EXAMEN
+        ========================== */
+
+        function finalizarExamen() {
+
+            audioInstrumento.pause();
+
+            clearInterval(cronometro);
+
+            let notaFinal = (puntosAcumulados / instrumentos.length) * 10;
+
+            notaFinal = notaFinal.toFixed(2);
+
+            const nombreAlumno = document.getElementById("nombre").value;
+
+            const cursoAlumno = document.getElementById("curso").value;
+
+            document.getElementById("mainContainer").innerHTML = `
+
+                <div style="padding: 40px;">
+
+                    <h1 style="color: #0077ff;">
+                        🎓 ¡Examen Finalizado!
+                    </h1>
+
+                    <p style="font-size: 1.2rem;">
+                        Buen trabajo,
+                        <strong>${nombreAlumno}</strong>.
+                    </p>
+
+                    <div style="
+                        font-size: 3.5rem;
+                        font-weight: bold;
+                        margin: 30px 0;
+                        color: #222;
+                    ">
+                        Nota: ${notaFinal} / 10
+                    </div>
+
+                    <p>
+                        Los resultados se han enviado automáticamente.
+                    </p>
+
+                    <button
+                        onclick="location.reload()"
+                        style="max-width: 250px; background: #555;"
+                    >
+                        Reiniciar
+                    </button>
+
+                </div>
+            `;
+
+            /* =========================
+               ENVÍO A GOOGLE FORMS
+            ========================== */
+
+            const URL_FORM = "https://docs.google.com/forms/d/e/1FAIpQLScWf2u0C-obZiAlHvyRw3aRg6AIJEJOObc7ITJrle_zqm68wA/formResponse";
+
+            const data = new URLSearchParams();
+
+            data.append("entry.1172876850", nombreAlumno);
+            data.append("entry.608888814", cursoAlumno);
+            data.append("entry.1187423713", notaFinal);
+
+            fetch(URL_FORM, {
+                method: "POST",
+                mode: "no-cors",
+                body: data
+            });
+        }
+
+    </script>
+
+</body>
+</html>
